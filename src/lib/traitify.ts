@@ -4,7 +4,7 @@
 export type Constructor<T> = new(...args: any[]) => T;
 
 /**
- * A "trait" is a function that takes a superclass `S` and returns new class of type `S & T`.
+ * A "trait" is a function that takes a superclass `S` and returns a new class of type `S & T`.
  */
 export type Trait<T> = <S>(superclass: Constructor<S>) => Constructor<S & T>
 
@@ -16,7 +16,9 @@ export type Trait<T> = <S>(superclass: Constructor<S>) => Constructor<S & T>
 export const superclass = <S>(superclass?: Constructor<S>) => new TraitBuilder(superclass)
 
 /**
- * Convenient function to be used when a class expresses multiple traits.
+ * Convenient function to be used when a class
+ * * does not extend a superclass, and
+ * * expresses multiple traits.
  */
 export const traits = <T>(t: Trait<T>) => superclass().with(t)
 
