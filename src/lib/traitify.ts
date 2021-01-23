@@ -25,7 +25,7 @@ export const traits = <T>(t: Trait<T>) => superclass().with(t)
  * * does not extend a superclass, and
  * * expresses one or more traits.
  */
-export const trait = <T>(t: Trait<T>) => traits(t).done()
+export const trait = <T>(t: Trait<T>) => traits(t).apply()
 
 /**
  * A convenient trait applier class.
@@ -49,7 +49,7 @@ class TraitBuilder<S> {
   /**
    * Return the class with all traits expressed.
    */
-  done() {
+  apply() {
     return this.superclass || class {}
   }
 }

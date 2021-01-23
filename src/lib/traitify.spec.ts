@@ -56,7 +56,7 @@ test('traits', (t) => {
     something: string = 'I am a base';
   }
 
-  class Sub extends superclass(Base).with(Taggable).done() {
+  class Sub extends superclass(Base).with(Taggable).apply() {
     constructor() {
       super(...arguments);
     }
