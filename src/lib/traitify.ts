@@ -16,11 +16,16 @@ export type Trait<T> = <S>(superclass: Constructor<S>) => Constructor<S & T>
 export const superclass = <S>(superclass?: Constructor<S>) => new TraitBuilder(superclass)
 
 /**
+ * Convenient function to be used when a class expresses multiple traits.
+ */
+export const traits = <T>(t: Trait<T>) => superclass().with(t)
+
+/**
  * Convenient function to be used when defining a class that
  * * does not extend a superclass, and
  * * expresses one or more traits.
  */
-export const trait = <T>(t: Trait<T>) => superclass().with(t).done()
+export const trait = <T>(t: Trait<T>) => traits(t).done()
 
 /**
  * A convenient trait applier class.
