@@ -6,7 +6,7 @@ export interface INameable {
 
 export const Nameable = <S extends Constructor<object>>(superclass: S) =>
   class extends superclass implements INameable {
-    _name?: string; // TODO: make this protected
+    _name?: string; // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
 
     get name() {
       return this._name;

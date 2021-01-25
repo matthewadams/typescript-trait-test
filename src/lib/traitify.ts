@@ -4,9 +4,9 @@
 export type Constructor<T> = new(...args: any[]) => T;
 
 /**
- * A "trait" is a function that takes a superclass `S` and returns a new class of type `S & T`.
+ * A "trait" is a function that takes a superclass `S` and returns a new class `T extends S`.
  */
-export type Trait<T extends Constructor<object>> = <S extends Constructor<object>>(superclass: S) => S & T
+export type Trait<S extends Constructor<object>, T extends S> = (superclass: S) => T
 
 /**
  * Convenient function when defining a class that
@@ -20,32 +20,32 @@ export const superclass = <S extends Constructor<object>>(superclass?: S) => new
  * * does not extend a superclass, and
  * * expresses multiple traits.
  */
-export const traits = <T extends Constructor<object>>(t: Trait<T>) => superclass().with(t)
+export const traits = <S extends Constructor<object>, T extends S>(t: Trait<S, T>) => superclass().with(t)
 
 /**
  * Convenient function to be used when defining a class that
  * * does not extend a superclass, and
- * * expresses one or more traits.
+ * * expresses exactly one trait.
  */
-export const trait = <T extends Constructor<object>>(t: Trait<T>) => traits(t).apply()
+export const trait = <S extends Constructor<object>, T extends S>(t: Trait<S, T>) => traits(t).apply()
 
 /**
  * A convenient trait applier class.
  */
 class TraitBuilder<S extends Constructor<object>> {
-  superclass?: S;
+  superclass: S;
 
   constructor (superclass?: S) {
-    this.superclass = superclass
+    this.superclass = superclass || class {} as S // TODO: remove "as S" when figured out
   }
 
   /**
    * Applies the trait to the current superclass then returns a new `TraitBuilder`.
    * @param trait The trait that the current superclass should express.
    */
-  with <T extends Constructor<object>>(trait: Trait<T>) {
+  with <S extends Constructor<object>, T extends S>(trait: Trait<S, T>) {
     // we have to return a new builder here because there's no way to take a collection of traits of differing types.
-    return new TraitBuilder(trait(this.superclass || class {}))
+    return new TraitBuilder(trait(this.superclass))
   }
 
   /**

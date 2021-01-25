@@ -8,6 +8,8 @@ test('express a single trait with no superclass', (t) => {
   class Point extends trait(Taggable) {
     constructor(public x: number, public y: number) {
       super(...arguments);
+      this.x = x;
+      this.y = y;
     }
 
     _testSetTag(tag?: string) {

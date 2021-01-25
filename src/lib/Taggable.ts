@@ -6,7 +6,7 @@ export interface ITaggable {
 
 export const Taggable = <S extends Constructor<object>>(superclass: S) =>
   class extends superclass implements ITaggable {
-    _tag?: string; // TODO: make this protected
+    _tag?: string; // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
 
     get tag() {
       return this._tag;
