@@ -4,9 +4,9 @@ export interface INameable {
   name?: string;
 }
 
-export const Nameable = <S>(superclass: Constructor<S>) =>
+export const Nameable = <S extends Constructor<object>>(superclass: S) =>
   class extends superclass implements INameable {
-    protected _name?: string;
+    _name?: string; // TODO: make this protected
 
     get name() {
       return this._name;

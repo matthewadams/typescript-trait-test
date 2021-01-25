@@ -4,9 +4,9 @@ export interface ITaggable {
   tag?: string;
 }
 
-export const Taggable = <S>(superclass: Constructor<S>) =>
+export const Taggable = <S extends Constructor<object>>(superclass: S) =>
   class extends superclass implements ITaggable {
-    protected _tag?: string;
+    _tag?: string; // TODO: make this protected
 
     get tag() {
       return this._tag;
