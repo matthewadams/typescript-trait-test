@@ -20,11 +20,11 @@ export const Nameable = <S extends Constructor<object>>(superclass: S) =>
       super(...args);
     }
 
-    _testSetName(name?: string) {
+    _testSetName(name?: string) { // TODO: make protected
       return name;
     }
 
-    _doSetName(name?: string) {
+    _doSetName(name?: string) { // TODO: make protected
       this._name = name;
       return this;
     }

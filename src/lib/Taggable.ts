@@ -20,11 +20,11 @@ export const Taggable = <S extends Constructor<object>>(superclass: S) =>
       super(...args);
     }
 
-    _testSetTag(tag?: string) {
+    _testSetTag(tag?: string) { // TODO: make protected
       return tag;
     }
 
-    _doSetTag(tag?: string) {
+    _doSetTag(tag?: string) { // TODO: make protected
       this._tag = tag;
       return this;
     }

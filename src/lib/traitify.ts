@@ -13,7 +13,7 @@ export type Trait<S extends Constructor<object>, T extends S> = (superclass: S) 
  * * extends a superclass, and
  * * expresses one or more traits.
  */
-export const superclass = <S extends Constructor<object>>(superclass?: S) => new TraitBuilder(superclass)
+export const superclass = <S extends Constructor<object>>(s?: S) => new TraitBuilder(s)
 
 /**
  * Convenient function to be used when a class
@@ -30,7 +30,7 @@ export const traits = <S extends Constructor<object>, T extends S>(t: Trait<S, T
 export const trait = <S extends Constructor<object>, T extends S>(t: Trait<S, T>) => traits(t).apply()
 
 /**
- * A convenient trait applier class.
+ * A convenient trait applier class that uses a builder pattern to apply traits.
  */
 class TraitBuilder<S extends Constructor<object>> {
   superclass: S;
