@@ -26,6 +26,5 @@ export const Nameable = <S extends Constructor<object>>(superclass: S) =>
 
     _doSetName(name?: string) { // TODO: make protected
       this._name = name;
-      return this;
     }
   };
