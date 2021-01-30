@@ -1,57 +1,66 @@
+/*
+ * Trait-enabling library.
+ * Only supports instance members.
+ * This library attempting to enable class declarations like:
+ * `class Person extends traits(Nameable).apply() { ... }`, (no superclass, single trait)
+ * `class FlyingFish extends traits(CanFly).with(CanSwim).apply() { ... }` (no superclass, multiple traits), and
+ * `class MeowingDog extends superclass(Animal).with(CanMeow).with(CanBark).apply() { ... }` (superclass, one or more traits).
+ */
+
 /**
  * Type definition of a constructor.
  */
 export type Constructor<T> = new(...args: any[]) => T;
 
 /**
- * A "trait" is a function that takes a superclass `S` and returns a new class `T extends S`.
+ * The empty class.
  */
-export type Trait<S extends Constructor<object>, T extends S> = (superclass: S) => T
+class Empty {
+}
+
+/**
+ * A "trait" is a function that takes a superclass `Superclass` and returns a new class that is of type `Superclass & TraitInterface`.
+ */
+export type Trait<Superclass extends Constructor<object>, TraitInterface> =
+  (superclass: Superclass) => Constructor<Superclass & TraitInterface>
 
 /**
  * Convenient function when defining a class that
  * * extends a superclass, and
  * * expresses one or more traits.
  */
-export const superclass = <S extends Constructor<object>>(s?: S) => new TraitBuilder(s)
+export const superclass = <Superclass extends Constructor<object>>(s?: Superclass) => new TraitBuilder(s);
 
 /**
  * Convenient function to be used when a class
  * * does not extend a superclass, and
  * * expresses multiple traits.
  */
-export const traits = <S extends Constructor<object>, T extends S>(t: Trait<S, T>) => superclass().with(t)
-
-/**
- * Convenient function to be used when defining a class that
- * * does not extend a superclass, and
- * * expresses exactly one trait.
- */
-export const trait = <S extends Constructor<object>, T extends S>(t: Trait<S, T>) => traits(t).apply()
+export const traits = <Superclass extends Constructor<object>, TraitInterface>(t: Trait<Superclass, TraitInterface>) => superclass().with(t);
 
 /**
  * A convenient trait applier class that uses a builder pattern to apply traits.
  */
-class TraitBuilder<S extends Constructor<object>> {
-  superclass: S;
+class TraitBuilder<Superclass extends Constructor<object>> {
+  superclass: Superclass;
 
-  constructor (superclass?: S) {
-    this.superclass = superclass || class {} as S // TODO: remove "as S" when figured out
+  constructor(superclass?: Superclass) {
+    this.superclass = (superclass || Empty) as Superclass; // TODO: how to remove as?
   }
 
   /**
    * Applies the trait to the current superclass then returns a new `TraitBuilder`.
    * @param trait The trait that the current superclass should express.
    */
-  with <S extends Constructor<object>, T extends S>(trait: Trait<S, T>) {
-    // we have to return a new builder here because there's no way to take a collection of traits of differing types.
-    return new TraitBuilder(trait(this.superclass))
+  with<Superclass, TraitInterface>(trait: Trait<Superclass, TraitInterface>) {
+    // need to apply the given trait to this.superclass to get a new class c, then return a new TraitBuilder(c)
+    return new TraitBuilder(trait(this.superclass));
   }
 
   /**
    * Return the class with all traits expressed.
    */
   apply() {
-    return this.superclass || class {}
+    return this.superclass || Empty;
   }
 }
