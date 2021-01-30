@@ -1,11 +1,11 @@
-import { traits, superclass } from './traitify';
+import { trait, superclass } from './traitify';
 
 import test from 'ava';
 import { Taggable } from './Taggable';
 import { Nameable } from './Nameable';
 
 test('express a single trait with no superclass', (t) => {
-  class Point extends traits(Taggable)
+  class Point extends trait(Taggable)
     .apply() {
     constructor(public x: number, public y: number) {
       super(...arguments);
@@ -91,7 +91,7 @@ test('express multiple traits and extend a superclass', (t) => {
 });
 
 test('superclass expresses a trait, subclass expresses another trait but overrides method in superclass\'s trait', (t) => {
-  class Animal extends traits(Nameable)
+  class Animal extends trait(Nameable)
     .apply() {
     constructor(...args: any[]) {
       super(args);
