@@ -1,7 +1,7 @@
 /*
  * Trait-enabling library.
  * Only supports instance members.
- * This library attempting to enable class declarations like:
+ * This library is attempting to enable class declarations like:
  * `class Person extends trait(Nameable).apply() { ... }`, (no superclass, single trait)
  * `class FlyingFish extends trait(CanFly).with(CanSwim).apply() { ... }` (no superclass, one or more traits), and
  * `class MeowingDog extends superclass(Animal).with(CanMeow).with(CanBark).apply() { ... }` (superclass, one or more traits).

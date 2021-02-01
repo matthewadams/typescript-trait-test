@@ -1,11 +1,21 @@
 import { Constructor } from './traitify';
 
+// public trait interface
 export interface ITaggable {
   tag?: string;
 }
 
-export const Taggable = <S extends Constructor<object>>(superclass: S) =>
-  class extends superclass implements ITaggable {
+// non-public trait interface
+export interface TTaggable extends ITaggable {
+  _tag?: string
+
+  _testSetTag(tag?: string): string | null | undefined
+
+  _doSetTag(tag?: string): void
+}
+
+export const Taggable = <S extends Constructor<object>, TTaggable>(superclass: S) =>
+  class extends superclass implements TTaggable {
     _tag?: string; // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
 
     get tag() {
