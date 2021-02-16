@@ -1,136 +1,153 @@
-import { trait, superclass } from './traitify';
-
-import test from 'ava';
+import { expect } from 'chai';
 import { Taggable } from './Taggable';
 import { Nameable } from './Nameable';
 
-test('express a single trait with no superclass', (t) => {
-  class Point extends trait(Taggable)
-    .apply() {
-    constructor(public x: number, public y: number) {
-      super(...arguments);
-      this.x = x;
-      this.y = y;
+describe('traits', function() {
+  it('express a single trait with no superclass', function() {
+    class Point extends Taggable() {
+      constructor(public x: number, public y: number) {
+        super(...arguments);
+      }
+
+      _testSetTag(tag?: string) {
+        tag = super._testSetTag(tag);
+
+        if (!tag) throw new Error('no tag given');
+        else return tag.toLowerCase();
+      }
     }
 
-    _testSetTag(tag?: string) {
-      tag = super._testSetTag(tag);
+    const point = new Point(10, 20);
+    point.tag = 'hello';
 
-      if (!tag) throw new Error('no tag given');
-      else return tag.toLowerCase();
-    }
-  }
+    expect(point.tag).to.equal('hello');
+    expect(() => point.tag = '').to.throw();
+  });
 
-  const point = new Point(10, 20);
-  point.tag = 'hello';
+  it('express multiple traits with no superclass', function() {
+    class Point2 extends Nameable(Taggable()) {
+      constructor(public x: number, public y: number) {
+        super(...arguments);
+      }
 
-  t.is(point.tag, 'hello');
-  t.throws(() => point.tag = '');
-});
+      _testSetTag(tag?: string) {
+        tag = super._testSetTag(tag);
 
-test('express a single trait and extend a superclass', (t) => {
-  class Base {
-    something: string = 'I am a base';
-  }
+        if (!tag) throw new Error('no tag given');
+        else return tag.toLowerCase();
+      }
 
-  class Sub extends superclass(Base)
-    .with(Taggable)
-    .apply() {
+      _testSetName(name?: string) {
+        name = super._testSetName(name);
 
-    constructor() {
-      super(...arguments);
-    }
-
-    _testSetTag(tag?: string): string | undefined {
-      tag = super._testSetTag(tag);
-
-      if (tag === 'throw') throw new Error('illegal tag value');
-      return tag;
-    }
-  }
-
-  const sub = new Sub();
-
-  t.assert(sub instanceof Sub);
-  t.assert(sub instanceof Base);
-
-  sub.tag = 'sub';
-
-  t.is(sub.tag, 'sub');
-  t.throws(() => sub.tag = 'throw');
-});
-
-test('express multiple traits and extend a superclass', (t) => {
-  class Animal {
-  }
-
-  class Person extends superclass(Animal)
-    .with(Nameable)
-    .with(Taggable)
-    .apply() {
-
-    constructor(...args: any[]) {
-      super(args);
+        if (!name) throw new Error('no name given');
+        else return name.toLowerCase();
+      }
     }
 
-    _testSetName(name?: string) {
-      if (!name) throw new Error('no name given');
-      return name.trim();
-    }
-  }
+    const point2 = new Point(10, 20);
+    point2.tag = 'hello';
 
-  const person = new Person();
+    expect(point2.tag).to.equal('hello');
+    expect(() => point2.tag = '').to.throw();
+  });
 
-  t.assert(person instanceof Person);
-  t.assert(person instanceof Animal);
-
-  person.name = 'Felix';
-
-  t.is(person.name, 'Felix');
-  t.throws(() => person.name = null);
-});
-
-test('superclass expresses a trait, subclass expresses another trait but overrides method in superclass\'s trait', (t) => {
-  class Animal extends trait(Nameable)
-    .apply() {
-    constructor(...args: any[]) {
-      super(args);
+  it('express a single trait and extend a superclass', function() {
+    class Base {
+      something: string = 'I am a base';
     }
 
-    _testSetName(name?: string) {
-      if (!name) throw new Error('no name given');
-      if (name.toLowerCase().includes('animal')) throw new Error('name must include "animal"');
-      return name;
-    }
-  }
+    class Sub extends Taggable(Base) {
+      constructor() {
+        super(...arguments);
+      }
 
-  const animal = new Animal();
-  animal.name = 'an animal';
+      _testSetTag(tag?: string): string | undefined {
+        tag = super._testSetTag(tag);
 
-  t.is(animal.name, 'an animal');
-  t.throws(() => animal.name = 'nothing');
-
-  class Person extends superclass(Animal)
-    .with(Taggable).apply() {
-
-    constructor(...args: any[]) {
-      super(args);
+        if (tag === 'throw') throw new Error('illegal tag value');
+        return tag;
+      }
     }
 
-    _testSetName(name?: string) {
-      if (!name) throw new Error('no name given');
-      if (name.toLowerCase().includes('person')) throw new Error('name must include "person"');
-      return name;
+    const sub = new Sub();
+
+    expect(sub instanceof Sub).to.equal(true);
+    expect(sub instanceof Base).to.equal(true);
+
+    sub.tag = 'sub';
+
+    expect(sub.tag).to.equal('sub');
+    expect(() => sub.tag = 'throw').to.throw();
+  });
+
+  it('express multiple traits and extend a superclass', function() {
+    class Animal {
+      public weight = 100;
     }
-  }
 
-  const person = new Person();
-  t.assert(person instanceof Person);
-  t.assert(person instanceof Animal);
+    class Person extends Nameable(Taggable(Animal)) {
+      constructor(...args: any[]) {
+        super(args);
+        this.weight = 180;
+      }
 
-  person.name = 'a person';
+      _testSetName(name?: string) {
+        if (!name) throw new Error('no name given');
+        return name.trim();
+      }
+    }
 
-  t.is(person.name, 'a person');
-  t.throws(() => person.name = 'an animal');
-  t.throws(() => person.name = 'nothing');
+    const person = new Person();
+
+    expect(person instanceof Person);
+    expect(person instanceof Animal);
+
+    person.name = 'Felix';
+
+    expect(person.name).to.equal('Felix');
+    expect(() => person.name = undefined).to.throw();
+  });
+
+  it('superclass expresses a trait, subclass expresses another trait but overrides method in superclass\'s trait', function() {
+    class Animal extends Nameable() {
+      constructor(...args: any[]) {
+        super(args);
+      }
+
+      _testSetName(name?: string) {
+        if (!name) throw new Error('no name given');
+        if (name.toLowerCase().includes('animal')) throw new Error('name must include "animal"');
+        return name;
+      }
+    }
+
+    const animal = new Animal();
+    animal.name = 'an animal';
+
+    expect(animal.name).to.equal('an animal');
+    expect(() => animal.name = 'nothing').to.throw();
+
+    class Person2 extends Taggable(Animal) {
+      constructor(...args: any[]) {
+        super(args);
+      }
+
+      _testSetName(name?: string) {
+        if (!name) throw new Error('no name given');
+        if (name.toLowerCase().includes('person')) throw new Error('name must include "person"');
+        return name;
+      }
+    }
+
+    const p = new Person2();
+    expect(p instanceof Person2);
+    expect(p instanceof Animal);
+
+    p.name = 'a person';
+
+    expect(p.name).to.equal( 'a person');
+    expect(() => p.name = 'an animal').to.throw();
+    expect(() => p.name = 'nothing').to.throw();
+  });
 });

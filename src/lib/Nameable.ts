@@ -1,4 +1,4 @@
-import { Constructor } from './traitify';
+import { Constructor, Empty } from './traitify';
 
 // public trait interface
 export interface INameable {
@@ -14,9 +14,14 @@ export interface TNameable extends INameable {
   _doSetName(name?: string): void
 }
 
-export const Nameable = <S extends Constructor<object>, TNameable>(superclass: S) =>
-  class extends superclass implements TNameable {
+export const Nameable = <S extends Constructor<object>>(superclass?: S) =>
+  class extends (superclass || Empty)
+    implements TNameable {
     _name?: string; // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
+
+    constructor(...args: any[]) {
+      super(...args);
+    }
 
     get name() {
       return this._name;
@@ -24,10 +29,6 @@ export const Nameable = <S extends Constructor<object>, TNameable>(superclass: S
 
     set name(name) {
       this._doSetName(this._testSetName(name));
-    }
-
-    constructor(...args: any[]) {
-      super(...args);
     }
 
     _testSetName(name?: string) { // TODO: make protected

@@ -1,4 +1,4 @@
-import { Constructor } from './traitify';
+import { Constructor, Empty } from './traitify';
 
 // public trait interface
 export interface ITaggable {
@@ -14,9 +14,14 @@ export interface TTaggable extends ITaggable {
   _doSetTag(tag?: string): void
 }
 
-export const Taggable = <S extends Constructor<object>, TTaggable>(superclass: S) =>
-  class extends superclass implements TTaggable {
+export const Taggable = <S extends Constructor<object>>(superclass?: S) =>
+  class extends (superclass || Empty)
+    implements TTaggable {
     _tag?: string; // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
+
+    constructor(...args: any[]) {
+      super(...args);
+    }
 
     get tag() {
       return this._tag;
@@ -26,15 +31,11 @@ export const Taggable = <S extends Constructor<object>, TTaggable>(superclass: S
       this._doSetTag(this._testSetTag(tag));
     }
 
-    constructor(...args: any[]) {
-      super(...args);
-    }
-
-    _testSetTag(tag?: string) { // TODO: make protected
+    _testSetTag(tag?: string) {
       return tag;
     }
 
-    _doSetTag(tag?: string) { // TODO: make protected
+    _doSetTag(tag?: string) {
       this._tag = tag;
     }
   };
