@@ -110,7 +110,7 @@ describe('traits', function() {
   });
 
   it('superclass expresses a trait, subclass expresses another trait but overrides method in superclass\'s trait', function() {
-    class Animal extends Nameable() {
+    class Animal2 extends Nameable() {
       constructor(...args: any[]) {
         super(args);
       }
@@ -122,13 +122,13 @@ describe('traits', function() {
       }
     }
 
-    const animal = new Animal();
+    const animal = new Animal2();
     animal.name = 'an animal';
 
     expect(animal.name).to.equal('an animal');
     expect(() => animal.name = 'nothing').to.throw();
 
-    class Person2 extends Taggable(Animal) {
+    class Person2 extends Taggable(Animal2) {
       constructor(...args: any[]) {
         super(args);
       }
@@ -142,7 +142,7 @@ describe('traits', function() {
 
     const p = new Person2();
     expect(p instanceof Person2);
-    expect(p instanceof Animal);
+    expect(p instanceof Animal2);
 
     p.name = 'a person';
 
