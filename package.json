@@ -16,7 +16,7 @@
     "posttest": "npm run lint",
     "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
     "pre-commit": "lint-staged --verbose",
-    "pre-push": "if git-branch-is --quiet --regex 'dev|v\\d+\\.\\d+'; then npm test; fi",
+    "pre-push": "if git-branch-is --quiet --regex 'main|v\\d+\\.\\d+'; then npm test; fi",
     "lint": "eslint 'src/**/*.{js,ts}' && prettier --check '**/*'",
     "format": "prettier --write '**/*'"
   },
