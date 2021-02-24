@@ -1,1 +1,1 @@
-export * from './lib/traitify'
+export * from './main/traitify'
