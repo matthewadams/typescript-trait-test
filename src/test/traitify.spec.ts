@@ -1,6 +1,6 @@
 import { expect } from 'chai'
-import { Taggable } from './Taggable'
-import { Nameable } from './Nameable'
+import * as Taggable from './Taggable'
+import * as Nameable from './Nameable'
 
 describe('traits', function () {
   it('express a single trait with no superclass', function () {
@@ -133,7 +133,7 @@ describe('traits', function () {
         return new this(...args) as Animal2 & Nameable.Public
       }
 
-      constructor(...args: never[]) {
+      protected constructor(...args: never[]) {
         super(...args)
       }
 
@@ -151,6 +151,8 @@ describe('traits', function () {
     expect(animal.name).to.equal('an animal')
     expect(() => (animal.name = 'nothing')).to.throw()
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     class Person2 extends Taggable.trait(Animal2) {
       static new(...args: never[]) {
         return new this(...args) as Person2 & Taggable.Public & Nameable.Public
