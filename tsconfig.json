@@ -4,6 +4,14 @@
     "src/**/*.ts"
   ],
   "compilerOptions": {
-    "outDir": "build/main"
+    "outDir": "dist",
+    "sourceMap": true,
+    "declaration": true,
+    "alwaysStrict": true,
+    "extendedDiagnostics": true,
+    "forceConsistentCasingInFileNames": true,
+    "listFiles": true,
+    "listEmittedFiles": true,
+    "target": "ES6"
   }
 }

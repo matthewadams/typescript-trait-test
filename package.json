@@ -18,7 +18,8 @@
     "pre-commit": "lint-staged --verbose",
     "pre-push": "if git-branch-is --quiet --regex 'main|v\\d+\\.\\d+'; then npm test; fi",
     "lint": "eslint 'src/**/*.{js,ts}' && prettier --check '**/*'",
-    "format": "prettier --write '**/*'"
+    "format": "prettier --write '**/*'",
+    "make-dist": "run-s transpile"
   },
   "nyc": {
     "include": [
