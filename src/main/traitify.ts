@@ -1,7 +1,8 @@
 /**
  * Type definition of a constructor.
  */
-export type Constructor<T> = new (...args: never[]) => T
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Constructor<T> = new (...args: any[]) => T
 
 /**
  * The empty class.

@@ -9,17 +9,18 @@ export interface Public {
 export interface Trait extends Public {
   _name?: string
 
-  _testSetName(name?: string): string | undefined
+  _testSetName(value?: string): string | undefined
 
-  _doSetName(name?: string): void
+  _doSetName(value?: string): void
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types
 export const trait = <S extends Constructor<object>>(superclass?: S) =>
   class extends (superclass || Empty) implements Trait {
     _name?: string // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
 
-    constructor(...args: unknown[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(...args: any[]) {
       super(...args)
     }
 
@@ -27,17 +28,15 @@ export const trait = <S extends Constructor<object>>(superclass?: S) =>
       return this._name
     }
 
-    set name(name) {
-      this._doSetName(this._testSetName(name))
+    set name(value) {
+      this._doSetName(this._testSetName(value))
     }
 
-    _testSetName(name?: string) {
-      // TODO: make protected
-      return name
+    _testSetName(value?: string) {
+      return value
     }
 
-    _doSetName(name?: string) {
-      // TODO: make protected
-      this._name = name
+    _doSetName(value?: string) {
+      this._name = value
     }
   }

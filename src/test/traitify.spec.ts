@@ -25,7 +25,9 @@ describe('traits', function () {
     point.tag = 'hello'
 
     expect(point.tag).to.equal('hello')
-    expect(() => (point.tag = '')).to.throw()
+    expect(() => {
+      point.tag = ''
+    }).to.throw()
   })
 
   it('express multiple traits with no superclass', function () {

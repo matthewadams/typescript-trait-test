@@ -9,14 +9,14 @@ export interface Public {
 export interface Trait extends Public {
   _tag?: string
 
-  _testSetTag(tag?: string): string | undefined
+  _testSetTag(value?: string): string | undefined
 
-  _doSetTag(tag?: string): void
+  _doSetTag(value?: string): void
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const trait = <S extends Constructor<object>>(superclass?: S) =>
-  class extends (superclass || Empty) implements Trait {
+// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types
+export const trait = <S extends Constructor<object>>(superclass?: S) => {
+  const Taggable = class extends (superclass || Empty) implements Trait {
     _tag?: string // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
 
     constructor(...args: unknown[]) {
@@ -27,15 +27,18 @@ export const trait = <S extends Constructor<object>>(superclass?: S) =>
       return this._tag
     }
 
-    set tag(tag) {
-      this._doSetTag(this._testSetTag(tag))
+    set tag(value) {
+      this._doSetTag(this._testSetTag(value))
     }
 
-    _testSetTag(tag?: string) {
-      return tag
+    _testSetTag(value?: string) {
+      return value
     }
 
-    _doSetTag(tag?: string) {
-      this._tag = tag
+    _doSetTag(value?: string) {
+      this._tag = value
     }
   }
+
+  return Taggable
+}
