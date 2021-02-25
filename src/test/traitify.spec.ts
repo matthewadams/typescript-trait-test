@@ -7,28 +7,24 @@ import * as Nameable from './Nameable'
 describe('traits', function () {
   it('expresses the simplest possible "Hello, world!" trait', function () {
     class HelloWorld extends Greetable.trait() {
-      static new(greeting = 'Hello') {
-        return new this(greeting) as HelloWorld & Greetable.Public
-      }
-
-      protected constructor(greeting = 'Hello') {
+      constructor(greeting = 'Hello') {
         super()
         this.greeting = greeting
       }
     }
 
-    const greeter = HelloWorld.new()
+    const greeter = new HelloWorld()
 
     expect(greeter.greet('world')).to.equal('Hello, world!')
   })
 
   it('expresses a more realistic "Hello, world!" trait', function () {
     class HelloWorld2 extends Greetable2.trait() {
-      static new(greeting = 'Hello') {
-        return new this(greeting) as HelloWorld2 & Greetable2.Public
-      }
+      // static new(greeting = 'Hello') {
+      //   return new this(greeting) as HelloWorld2 & Greetable2.Public
+      // }
 
-      protected constructor(greeting = 'Hello') {
+      constructor(greeting = 'Hello') {
         super()
         this.greeting = greeting
       }
@@ -47,7 +43,7 @@ describe('traits', function () {
       }
     }
 
-    const greeter = HelloWorld2.new()
+    const greeter = new HelloWorld2()
 
     expect(greeter.greet('world')).to.equal('Hello, world!')
     expect(() => {
@@ -57,11 +53,7 @@ describe('traits', function () {
 
   it('express a single trait with no superclass', function () {
     class Point extends Taggable.trait() {
-      static new(x: number, y: number) {
-        return new this(x, y) as Point & Taggable.Public & Nameable.Public
-      }
-
-      protected constructor(public x: number, public y: number) {
+      constructor(public x: number, public y: number) {
         super(x, y)
       }
 
@@ -73,7 +65,7 @@ describe('traits', function () {
       }
     }
 
-    const point = Point.new(10, 20)
+    const point = new Point(10, 20)
     point.tag = 'hello'
 
     expect(point.tag).to.equal('hello')
@@ -83,12 +75,8 @@ describe('traits', function () {
   })
 
   it('express a single trait overriding the generic parameter with no superclass', function () {
-    class Point extends Taggable.trait<number>() {
-      static new(x: number, y: number) {
-        return new this(x, y) as Point & Taggable.Public & Nameable.Public
-      }
-
-      protected constructor(public x: number, public y: number) {
+    class PointN extends Taggable.trait<number>() {
+      constructor(public x: number, public y: number) {
         super(x, y)
       }
 
@@ -100,7 +88,7 @@ describe('traits', function () {
       }
     }
 
-    const point = Point.new(10, 20)
+    const point = new PointN(10, 20)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     point.tag = 42
@@ -115,6 +103,7 @@ describe('traits', function () {
 
   it('express multiple traits with no superclass', function () {
     class Point2 extends Nameable.trait(Taggable.trait()) {
+      // required to overcome TypeScript compiler bug?
       static new(x: number, y: number) {
         return new this(x, y) as Point2 & Taggable.Public & Nameable.Public
       }
@@ -184,6 +173,7 @@ describe('traits', function () {
     }
 
     class Person extends Nameable.trait(Taggable.trait(Animal)) {
+      // required to overcome TypeScript compiler bug?
       static new(...args: never[]) {
         return new this(...args) as Person & Taggable.Public & Nameable.Public
       }
@@ -207,18 +197,17 @@ describe('traits', function () {
     expect(person instanceof Animal)
 
     person.name = 'Felix'
+    person.tag = 'something'
 
     expect(person.name).to.equal('Felix')
     expect(() => (person.name = undefined)).to.throw()
+
+    expect(person.tag).to.equal('something')
   })
 
   it("superclass expresses a trait, subclass expresses another trait but overrides method in superclass's trait", function () {
     class Animal2 extends Nameable.trait() {
-      static new(...args: never[]) {
-        return new this(...args) as Animal2 & Nameable.Public
-      }
-
-      protected constructor(...args: never[]) {
+      constructor(...args: never[]) {
         super(...args)
       }
 
@@ -230,7 +219,7 @@ describe('traits', function () {
       }
     }
 
-    const animal = Animal2.new()
+    const animal = new Animal2()
     animal.name = 'an animal'
 
     expect(animal.name).to.equal('an animal')
@@ -239,6 +228,7 @@ describe('traits', function () {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     class Person2 extends Taggable.trait(Animal2) {
+      // required to overcome TypeScript compiler bug?
       static new(...args: never[]) {
         return new this(...args) as Person2 & Taggable.Public & Nameable.Public
       }
