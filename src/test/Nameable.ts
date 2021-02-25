@@ -1,12 +1,16 @@
 import { Constructor, Empty } from '../main/traitify'
 
-// public trait interface
+/**
+ * Public trait interface
+ */
 export interface Public {
   name?: string
 }
 
-// non-public trait interface
-export interface Trait extends Public {
+/**
+ * Nonpublic trait interface
+ */
+export interface Implementation extends Public {
   _name?: string
 
   _testSetName(value?: string): string | undefined
@@ -14,11 +18,20 @@ export interface Trait extends Public {
   _doSetName(value?: string): void
 }
 
+/**
+ * The trait function.
+ */
 // eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types
 export const trait = <S extends Constructor<object>>(superclass?: S) =>
-  class extends (superclass || Empty) implements Trait {
-    _name?: string // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
+  /**
+   * Class that implements the trait
+   */
+  class Nameable extends (superclass || Empty) implements Implementation {
+    _name?: string
 
+    /**
+     * Constructor that simply delegates to the super's constructor
+     */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(...args: any[]) {
       super(...args)

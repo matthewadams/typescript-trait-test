@@ -1,8 +1,60 @@
 import { expect } from 'chai'
+import * as Greetable from './Greetable'
+import * as Greetable2 from './Greetable2'
 import * as Taggable from './Taggable'
 import * as Nameable from './Nameable'
 
 describe('traits', function () {
+  it('expresses the simplest possible "Hello, world!" trait', function () {
+    class HelloWorld extends Greetable.trait() {
+      static new(greeting = 'Hello') {
+        return new this(greeting) as HelloWorld & Greetable.Public
+      }
+
+      protected constructor(greeting = 'Hello') {
+        super()
+        this.greeting = greeting
+      }
+    }
+
+    const greeter = HelloWorld.new()
+
+    expect(greeter.greet('world')).to.equal('Hello, world!')
+  })
+
+  it('expresses a more realistic "Hello, world!" trait', function () {
+    class HelloWorld2 extends Greetable2.trait() {
+      static new(greeting = 'Hello') {
+        return new this(greeting) as HelloWorld2 & Greetable2.Public
+      }
+
+      protected constructor(greeting = 'Hello') {
+        super()
+        this.greeting = greeting
+      }
+
+      /**
+       * Overrides default behavior
+       */
+      _testSetGreeting(value?: string): string | undefined {
+        value = super._testSetGreeting(value)
+
+        if (!value) {
+          throw new Error('no greeting given')
+        }
+
+        return value.trim()
+      }
+    }
+
+    const greeter = HelloWorld2.new()
+
+    expect(greeter.greet('world')).to.equal('Hello, world!')
+    expect(() => {
+      greeter.greeting = ''
+    }).to.throw()
+  })
+
   it('express a single trait with no superclass', function () {
     class Point extends Taggable.trait() {
       static new(x: number, y: number) {
@@ -27,6 +79,37 @@ describe('traits', function () {
     expect(point.tag).to.equal('hello')
     expect(() => {
       point.tag = ''
+    }).to.throw()
+  })
+
+  it('express a single trait overriding the generic parameter with no superclass', function () {
+    class Point extends Taggable.trait<number>() {
+      static new(x: number, y: number) {
+        return new this(x, y) as Point & Taggable.Public & Nameable.Public
+      }
+
+      protected constructor(public x: number, public y: number) {
+        super(x, y)
+      }
+
+      _testSetTag(tag?: number) {
+        tag = super._testSetTag(tag)
+
+        if (!tag) throw new Error('no tag given')
+        else return tag
+      }
+    }
+
+    const point = Point.new(10, 20)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    point.tag = 42
+
+    expect(point.tag).to.equal(42)
+    expect(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      point.tag = 0
     }).to.throw()
   })
 

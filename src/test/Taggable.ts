@@ -1,44 +1,57 @@
 import { Constructor, Empty } from '../main/traitify'
 
-// public trait interface
-export interface Public {
-  tag?: string
+/**
+ * Public trait interface
+ */
+export interface Public<T = string> {
+  tag?: T
 }
 
-// non-public trait interface
-export interface Trait extends Public {
-  _tag?: string
+/**
+ * Nonpublic trait interface
+ */
+export interface Implementation<T = string> extends Public<T> {
+  _tag?: T
 
-  _testSetTag(value?: string): string | undefined
+  _testSetTag(value?: T): T | undefined
 
-  _doSetTag(value?: string): void
+  _doSetTag(value?: T): void
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types
-export const trait = <S extends Constructor<object>>(superclass?: S) => {
-  const Taggable = class extends (superclass || Empty) implements Trait {
-    _tag?: string // TODO: make protected when https://github.com/microsoft/TypeScript/issues/36060 is fixed
+/**
+ * The trait function.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+export const trait = <T = string, S extends Constructor<object> = any>(
+  superclass?: S
+) =>
+  /**
+   * Class that implements the trait
+   */
+  class Taggable extends (superclass || Empty) implements Implementation<T> {
+    _tag?: T
 
-    constructor(...args: unknown[]) {
+    /**
+     * Constructor that simply delegates to the super's constructor
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(...args: any[]) {
       super(...args)
     }
 
-    get tag() {
+    get tag(): T | undefined {
       return this._tag
     }
 
-    set tag(value) {
+    set tag(value: T | undefined) {
       this._doSetTag(this._testSetTag(value))
     }
 
-    _testSetTag(value?: string) {
+    _testSetTag(value?: T) {
       return value
     }
 
-    _doSetTag(value?: string) {
+    _doSetTag(value?: T) {
       this._tag = value
     }
   }
-
-  return Taggable
-}
