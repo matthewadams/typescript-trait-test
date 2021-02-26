@@ -20,10 +20,6 @@ describe('traits', function () {
 
   it('expresses a more realistic "Hello, world!" trait', function () {
     class HelloWorld2 extends Greetable2.trait() {
-      // static new(greeting = 'Hello') {
-      //   return new this(greeting) as HelloWorld2 & Greetable2.Public
-      // }
-
       constructor(greeting = 'Hello') {
         super()
         this.greeting = greeting
